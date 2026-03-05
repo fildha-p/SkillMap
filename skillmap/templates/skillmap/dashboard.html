@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Skill Progress Dashboard</title>
+
+  <style>
+    /* ===============================
+       DASHBOARD — BROWN THEME (CLEAN)
+    =============================== */
+
+    :root{
+      --bg: #302216;        /* deep dark brown (your updated) */
+      --bg2:#23180f;        /* darker chocolate (your updated) */
+
+      --text:#F5E6D3;       /* warm cream */
+      --muted:#D2B48C;      /* tan */
+
+      --p1:#6B3E26;         /* rich brown */
+      --p2:#8B5A2B;         /* saddle brown */
+      --p3:#C19A6B;         /* caramel */
+
+      --danger:#EF4444;
+      --danger2:#DC2626;
+      --success:#22C55E;
+
+      --border: rgba(193,154,107,0.18);
+      --border2: rgba(193,154,107,0.30);
+
+      --shadow: rgba(0,0,0,0.70);
+      --glow1: rgba(139,90,43,0.35);
+      --glow2: rgba(193,154,107,0.15);
+    }
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+
+    body{
+      font-family:'Inter', Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 20% 15%, rgba(139,90,43,0.25) 0%, transparent 45%),
+        radial-gradient(circle at 80% 25%, rgba(193,154,107,0.18) 0%, transparent 50%),
+        radial-gradient(circle at 55% 95%, rgba(107,62,38,0.15) 0%, transparent 55%),
+        linear-gradient(180deg, var(--bg2), var(--bg));
+      overflow-x:hidden;
+      position:relative;
+    }
+
+    /* subtle texture */
+    body::after{
+      content:"";
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
+      opacity: .06;
+      mix-blend-mode: overlay;
+      pointer-events:none;
+      z-index:-1;
+    }
+
+    .container{
+      padding: 40px;
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    /* ===============================
+       NAVBAR
+    =============================== */
+    .navbar{
+      width:100%;
+      height:92px;
+      padding:0 44px;
+
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+
+      background:
+        radial-gradient(circle at 18% 30%, rgba(139,90,43,0.30) 0%, transparent 55%),
+        radial-gradient(circle at 80% 10%, rgba(193,154,107,0.18) 0%, transparent 55%),
+        linear-gradient(180deg, rgba(48,34,22,0.92), rgba(35,24,15,0.85));
+
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(193,154,107,0.22);
+
+      box-shadow:
+        0 18px 60px rgba(0,0,0,0.65),
+        0 0 40px rgba(139,90,43,0.18);
+
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .navbar::after{
+      content:"";
+      position:absolute;
+      left: 0;
+      right: 0;
+      bottom: -1px;
+      height: 2px;
+      background: linear-gradient(90deg,
+        transparent,
+        rgba(193,154,107,0.45),
+        rgba(139,90,43,0.75),
+        rgba(193,154,107,0.45),
+        transparent
+      );
+      opacity: 0.85;
+    }
+
+    .navbar::before{
+      content:"";
+      position:absolute;
+      inset: 0;
+      background: linear-gradient(
+        110deg,
+        transparent 0%,
+        rgba(255,255,255,0.06) 32%,
+        rgba(255,255,255,0.02) 48%,
+        transparent 70%
+      );
+      opacity: 0.55;
+      pointer-events:none;
+    }
+
+    .nav-left{ position: relative; }
+
+    .logo{
+      font-size:30px;
+      font-weight:900;
+      letter-spacing:0.6px;
+      background: linear-gradient(90deg, var(--p3), var(--p1), var(--text));
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
+
+    .nav-left::after{
+      content:"";
+      position:absolute;
+      left: -18px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 170px;
+      height: 44px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 50%, rgba(139,90,43,0.22), transparent 70%);
+      filter: blur(10px);
+      pointer-events:none;
+    }
+
+    .nav-right{
+      display:flex;
+      align-items:center;
+      gap:20px;
+    }
+
+    .welcome-text{
+      color: rgba(245,230,211,0.78);
+      font-size: 18px;
+      letter-spacing: 0.2px;
+    }
+
+    .logout-btn{
+      padding:10px 18px;
+      border:none;
+      border-radius:12px;
+      font-weight:800;
+      font-size:14px;
+      cursor:pointer;
+
+      background: linear-gradient(90deg, var(--p1), var(--p2));
+      color: var(--text);
+
+      border: 1px solid rgba(193,154,107,0.28);
+      box-shadow:
+        0 10px 22px rgba(0,0,0,0.45),
+        0 0 18px rgba(139,90,43,0.30);
+
+      transition:0.25s ease;
+    }
+
+    .logout-btn:hover{
+      transform:translateY(-2px);
+      box-shadow:
+        0 16px 34px rgba(0,0,0,0.55),
+        0 0 28px rgba(193,154,107,0.32);
+    }
+
+    /* ===============================
+       CARDS / HEADINGS / TEXT
+    =============================== */
+    .card{
+      background: rgba(139,90,43,0.08);
+      backdrop-filter: blur(12px);
+      padding: 30px;
+      border-radius: 16px;
+      margin-bottom: 30px;
+      border: 1px solid rgba(193,154,107,0.22);
+      box-shadow: 0 18px 70px rgba(0,0,0,0.65);
+      transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card:hover{
+      transform: translateY(-6px);
+      border-color: rgba(193,154,107,0.35);
+      box-shadow:
+        0 24px 90px rgba(0,0,0,0.75),
+        0 0 40px rgba(139,90,43,0.18);
+    }
+
+    h2{
+      font-size: 18px;
+      margin-bottom: 25px;
+      color: var(--muted);
+    }
+
+    .footer-text{
+      text-align:center;
+      margin-top:25px;
+      font-size:13px;
+      color: rgba(245,230,211,0.70);
+      opacity:0.8;
+    }
+
+    /* ===============================
+       BUTTONS (shared)
+    =============================== */
+    .btn{
+      background: linear-gradient(90deg, var(--p1), var(--p2));
+      color: var(--text);
+      padding: 8px 16px;
+      font-size: 13px;
+      border-radius: 10px;
+      text-decoration: none;
+      display: inline-block;
+      transition: 0.25s ease;
+      border: 1px solid rgba(193,154,107,0.28);
+      box-shadow:
+        0 10px 22px rgba(0,0,0,0.40),
+        0 0 18px rgba(139,90,43,0.25);
+    }
+
+    .btn:hover{
+      transform: translateY(-2px);
+      box-shadow:
+        0 16px 34px rgba(0,0,0,0.55),
+        0 0 26px rgba(193,154,107,0.30);
+    }
+
+    .reset-btn{
+      background: linear-gradient(90deg, var(--danger), var(--danger2));
+      color: white;
+      border: none;
+      padding: 7px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: 0.25s ease;
+      box-shadow: 0 10px 22px rgba(0,0,0,0.35);
+    }
+
+    .reset-btn:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 16px 34px rgba(0,0,0,0.45), 0 0 18px rgba(239,68,68,0.25);
+    }
+
+    /* ===============================
+       ROLE MANAGEMENT
+    =============================== */
+    .role-title-main{
+      font-size: 20px;
+      margin-bottom: 30px;
+      color: var(--muted);
+    }
+
+    .role-grid{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: start;
+    }
+
+    .role-left{
+      border-right: 1px solid rgba(193,154,107,0.18);
+      padding-right: 30px;
+    }
+
+    .role-right{ padding-left: 10px; }
+
+    .section-label{
+      font-size: 14px;
+      color: rgba(245,230,211,0.72);
+      margin-bottom: 15px;
+      font-weight: 600;
+    }
+
+    .empty-text{
+      color: rgba(245,230,211,0.70);
+      font-size: 14px;
+      opacity: 0.8;
+    }
+
+    .role-list{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .role-item{
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .role-chip{
+      padding: 8px 18px;
+      background: linear-gradient(90deg, var(--p1), var(--p2));
+      color: var(--text);
+      border-radius: 25px;
+      text-decoration: none;
+      font-size: 14px;
+      transition: 0.25s ease;
+      border: 1px solid rgba(193,154,107,0.22);
+      box-shadow: 0 12px 26px rgba(0,0,0,0.35);
+    }
+
+    .role-chip:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 18px 36px rgba(0,0,0,0.50), 0 0 22px rgba(193,154,107,0.18);
+    }
+
+    .active-role{
+      border: 1px solid rgba(193,154,107,0.75) !important;
+      box-shadow:
+        0 0 0 1px rgba(193,154,107,0.25),
+        0 0 35px rgba(139,90,43,0.45),
+        0 0 90px rgba(193,154,107,0.18) !important;
+      transform: scale(1.05);
+      animation: pulseGlow 2s infinite alternate;
+    }
+
+    @keyframes pulseGlow{
+      from{ box-shadow: 0 0 12px rgba(193,154,107,0.35); }
+      to{   box-shadow: 0 0 22px rgba(193,154,107,0.60); }
+    }
+
+    .delete-btn{
+      background: var(--danger);
+      color: white;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      text-decoration: none;
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 22px rgba(0,0,0,0.35);
+      transition: 0.2s ease;
+    }
+
+    .delete-btn:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 16px 34px rgba(0,0,0,0.45), 0 0 18px rgba(239,68,68,0.25);
+    }
+
+    /* allow dropdown to overflow */
+    .card.role-management-card{
+      overflow: visible;
+      z-index: 10;
+    }
+
+    /* ===============================
+       CUSTOM DROPDOWN
+    =============================== */
+    .custom-select{
+      position: relative;
+      width: 240px;
+      z-index: 9999;
+    }
+
+    .select-trigger{
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: rgba(35,24,15,0.75);
+      border: 1px solid rgba(193,154,107,0.35);
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: 0.25s ease;
+    }
+
+    .select-trigger:hover{
+      border-color: rgba(193,154,107,0.55);
+      box-shadow: 0 0 0 3px rgba(193,154,107,0.12), 0 0 18px rgba(139,90,43,0.20);
+    }
+
+    .arrow{
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 6px solid rgba(245,230,211,0.70);
+      transition: transform 0.25s ease;
+    }
+
+    .custom-select.open .arrow{
+      transform: rotate(180deg);
+    }
+
+    .options{
+      position: absolute;
+      top: 110%;
+      left: 0;
+      right: 0;
+      background: rgba(35,24,15,0.92);
+      border-radius: 10px;
+      border: 1px solid rgba(193,154,107,0.28);
+      max-height: 220px;
+      overflow-y: auto;
+      display: none;
+      z-index: 10000;
+      box-shadow: 0 16px 50px rgba(0,0,0,0.60), 0 0 30px rgba(139,90,43,0.14);
+    }
+
+    .custom-select.open .options{ display:block; }
+
+    .option-item{
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: 0.18s ease;
+      color: rgba(245,230,211,0.88);
+    }
+
+    .option-item:hover{
+      background: rgba(193,154,107,0.16);
+      color: var(--text);
+    }
+
+    .role-form{
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    /* ===============================
+       ACTIVE ROLE HEADER
+    =============================== */
+    .active-role-header{
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .active-role-header h1{
+      font-size: 32px;
+      font-weight: 800;
+      background: linear-gradient(90deg, var(--text), var(--p3), var(--p2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
+    }
+
+    .role-subtitle{
+      color: rgba(245,230,211,0.70);
+      font-size: 14px;
+      opacity: 0.85;
+    }
+
+    /* ===============================
+       BADGES / DETAILS
+    =============================== */
+    .badge{
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      margin-top: 8px;
+      font-weight: 700;
+      border: 1px solid rgba(193,154,107,0.20);
+    }
+
+    .badge-beginner{ background: rgba(239,68,68,0.12); color: var(--danger); }
+    .badge-intermediate{ background: rgba(193,154,107,0.14); color: var(--p3); }
+    .badge-advanced{ background: rgba(34,197,94,0.12); color: var(--success); }
+
+    .readiness-details{
+      margin-top: 20px;
+      margin-bottom: 40px;
+      text-align: center;
+    }
+
+    .skill-line{
+      margin-top: 8px;
+      font-size: 15px;
+      color: rgba(245,230,211,0.72);
+    }
+
+    .skill-line span{
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    /* ===============================
+       TABLE
+    =============================== */
+    table{
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    table th{
+      text-align: left;
+      padding: 12px;
+      font-size: 14px;
+      color: var(--muted);
+      border-bottom: 1px solid rgba(193,154,107,0.20);
+    }
+
+    table td{
+      padding: 14px 12px;
+      border-bottom: 1px solid rgba(193,154,107,0.14);
+      font-size: 14px;
+      color: rgba(245,230,211,0.90);
+    }
+
+    table tbody tr:hover{
+      background: rgba(193,154,107,0.08);
+      box-shadow: inset 0 0 0 1px rgba(193,154,107,0.10);
+    }
+
+    /* ===============================
+       ATTEMPT HISTORY
+    =============================== */
+    .attempt-skill-card{
+      margin-bottom: 30px;
+      padding: 25px;
+      border-radius: 16px;
+      background: rgba(139,90,43,0.06);
+      border: 1px solid rgba(193,154,107,0.18);
+      transition: 0.25s ease;
+    }
+
+    .attempt-skill-card:hover{
+      transform: translateY(-4px);
+      box-shadow: 0 18px 50px rgba(0,0,0,0.55), 0 0 26px rgba(139,90,43,0.14);
+    }
+
+    .attempt-skill-title{
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 15px;
+      color: var(--muted);
+    }
+
+    .attempt-summary{
+      display: flex;
+      gap: 30px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .summary-box{
+      background: rgba(193,154,107,0.08);
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-size: 14px;
+      border: 1px solid rgba(193,154,107,0.18);
+    }
+
+    .summary-box strong{
+      display: block;
+      font-size: 16px;
+      margin-top: 4px;
+      color: var(--text);
+    }
+
+    .best-score{ color: var(--success); }
+    .latest-score{ color: var(--p3); }
+
+    .recent-row{
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(193,154,107,0.14);
+      font-size: 14px;
+      gap: 16px;
+    }
+
+    .recent-row:last-child{ border-bottom:none; }
+
+    .recent-left{ color: rgba(245,230,211,0.78); }
+
+    .view-link{
+      color: var(--p3);
+      text-decoration: none;
+      font-size: 13px;
+      transition: 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .view-link:hover{ color: var(--text); }
+
+    .history-title{
+      font-size: 22px;
+      margin-bottom: 25px;
+      color: var(--muted);
+    }
+
+    /* ===============================
+       READINESS RING
+    =============================== */
+    .readiness-container{
+      display:flex;
+      justify-content:center;
+    }
+
+    .readiness-wrapper{
+      position: relative;
+      width: 170px;
+      height: 170px;
+      margin: 20px 0;
+    }
+
+    .progress-ring__background{
+      fill: none;
+      stroke: rgba(193,154,107,0.15);
+      stroke-width: 14;
+    }
+
+    .progress-ring__circle{
+      fill: none;
+      stroke: url(#progressGradient);
+      stroke-width: 14;
+      stroke-linecap: round;
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+      stroke-dasharray: 471;
+      stroke-dashoffset: 471;
+      transition: stroke-dashoffset 1.2s ease;
+      filter: drop-shadow(0 0 10px rgba(139,90,43,0.25)) drop-shadow(0 0 22px rgba(193,154,107,0.12));
+    }
+
+    .readiness-text{
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 30px;
+      font-weight: 900;
+      color: var(--p3);
+    }
+
+    /* ===============================
+       RESPONSIVE
+    =============================== */
+    @media (max-width: 900px){
+      .container{ padding: 26px; }
+      .role-grid{ grid-template-columns: 1fr; gap: 24px; }
+      .role-left{ border-right: none; padding-right: 0; border-bottom: 1px solid rgba(193,154,107,0.18); padding-bottom: 20px; }
+      .role-right{ padding-left: 0; }
+    }
+
+    @media (max-width: 720px){
+      .navbar{ padding: 0 18px; height: 84px; }
+      .welcome-text{ display:none; }
+      .logo{ font-size: 26px; }
+      .custom-select{ width: 100%; }
+      .role-form{ flex-direction: column; align-items: stretch; }
+      .btn{ width: 100%; text-align:center; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navbar">
+    <div class="nav-left">
+      <span class="logo">SkillMap</span>
+    </div>
+
+    <div class="nav-right">
+      <span class="welcome-text">Welcome, {{ user.username }}</span>
+
+      <form method="POST" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="logout-btn">Logout</button>
+      </form>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <!-- ROLE MANAGEMENT -->
+    <div class="card role-management-card">
+      <h2 class="role-title-main">Role Management</h2>
+
+      <div class="role-grid">
+
+        <!-- LEFT -->
+        <div class="role-left">
+          <p class="section-label">Your Selected Roles</p>
+
+          {% if selected_roles %}
+            <div class="role-list">
+              {% for ur in selected_roles %}
+                <div class="role-item">
+                  <a class="role-chip {% if active_role and active_role.id == ur.role.id %}active-role{% endif %}"
+                     href="?role={{ ur.role.id }}">
+                    {{ ur.role.name }}
+                  </a>
+
+                  <a class="delete-btn" href="{% url 'delete_role' ur.role.id %}">✕</a>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p class="empty-text">No roles selected yet.</p>
+          {% endif %}
+        </div>
+
+        <!-- RIGHT -->
+        <div class="role-right">
+          <p class="section-label">Add New Role</p>
+
+          <form method="POST" class="role-form">
+            {% csrf_token %}
+
+            <div class="custom-select" id="roleDropdown">
+              <div class="select-trigger">
+                <span id="selectedText">Select role</span>
+                <div class="arrow"></div>
+              </div>
+
+              <div class="options">
+                {% for r in all_roles %}
+                  <div class="option-item" data-value="{{ r.id }}">{{ r.name }}</div>
+                {% endfor %}
+              </div>
+
+              <input type="hidden" name="role_id" id="selectedValue" required />
+            </div>
+
+            <button class="btn" type="submit">Add Role</button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+
+    {% if active_role %}
+
+      <!-- ROLE READINESS -->
+      <div class="card">
+        <div class="active-role-header">
+          <h1>{{ active_role.name }}</h1>
+          <p class="role-subtitle">Role Readiness Assessment</p>
+        </div>
+
+        <div class="readiness-container">
+          <div class="readiness-wrapper">
+            <svg class="progress-ring" width="170" height="170">
+              <defs>
+                <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#6B3E26" />
+                  <stop offset="100%" stop-color="#C19A6B" />
+                </linearGradient>
+              </defs>
+
+              <circle class="progress-ring__background" cx="85" cy="85" r="75"></circle>
+
+              <circle class="progress-ring__circle"
+                      cx="85" cy="85" r="75"
+                      data-percentage="{{ role_readiness.percentage }}"></circle>
+            </svg>
+
+            <div class="readiness-text">{{ role_readiness.percentage }}%</div>
+          </div>
+        </div>
+
+        <div class="readiness-details">
+          {% if role_readiness.label == "Beginner" %}
+            <div class="badge badge-beginner">Needs Improvement</div>
+          {% elif role_readiness.label == "Intermediate" %}
+            <div class="badge badge-intermediate">On Track</div>
+          {% elif role_readiness.label == "Advanced" %}
+            <div class="badge badge-advanced">Interview Ready</div>
+          {% endif %}
+
+          {% if weakest_skill %}
+            <div class="skill-line">Weakest Skill: <span>{{ weakest_skill }}</span></div>
+          {% endif %}
+
+          {% if strongest_skill %}
+            <div class="skill-line">Strongest Skill: <span>{{ strongest_skill }}</span></div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- SKILL PROGRESSION -->
+      <div class="card">
+        <h2>Skill Progression</h2>
+
+        {% if skill_progress %}
+          <table>
+            <thead>
+              <tr>
+                <th>Skill</th>
+                <th>Level</th>
+                <th>Status</th>
+                <th>Action</th>
+                <th>Reset</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in skill_progress %}
+                <tr>
+                  <td>{{ item.skill.name }}</td>
+                  <td>{{ item.current_level }} / {{ item.total_levels }}</td>
+                  <td><strong>{{ item.category }}</strong></td>
+
+                  <td>
+                    {% if item.next_level %}
+                      <a class="btn" href="{% url 'take_assessment' item.skill.id item.next_level %}">
+                        Level {{ item.next_level }}
+                      </a>
+                    {% else %}
+                      <span style="opacity:0.55;">Completed</span>
+                    {% endif %}
+                  </td>
+
+                  <td>
+                    {% if item.current_level > 0 %}
+                      <form method="POST"
+                            action="{% url 'reset_skill' item.skill.id %}"
+                            onsubmit="return confirm('Are you sure you want to reset this skill?');">
+                        {% csrf_token %}
+                        <button class="reset-btn" type="submit">Reset</button>
+                      </form>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p style="color:rgba(245,230,211,0.72);">No skills available.</p>
+        {% endif %}
+      </div>
+
+      <!-- ASSESSMENT HISTORY -->
+      <div class="card">
+        <h2 class="history-title">Assessment History</h2>
+
+        {% if attempts %}
+          {% regroup attempts by skill as skill_attempts %}
+
+          {% for skill_group in skill_attempts %}
+            <div class="attempt-skill-card">
+              <div class="attempt-skill-title">{{ skill_group.grouper.name }}</div>
+
+              {% with skill_group.list as skill_list %}
+                {% with skill_list|first as latest_attempt %}
+                  {% with skill_list|dictsortreversed:"score"|first as best_attempt %}
+
+                    <div class="attempt-summary">
+                      <div class="summary-box">
+                        Best Score
+                        <strong class="best-score">{{ best_attempt.score }}%</strong>
+                      </div>
+
+                      <div class="summary-box">
+                        Latest Score
+                        <strong class="latest-score">{{ latest_attempt.score }}%</strong>
+                      </div>
+
+                      <div class="summary-box">
+                        Total Attempts
+                        <strong>{{ skill_list|length }}</strong>
+                      </div>
+                    </div>
+
+                  {% endwith %}
+                {% endwith %}
+
+                <div class="recent-attempts">
+                  {% regroup skill_list by level_achieved as level_groups %}
+
+                  {% for level_group in level_groups %}
+                    {% with level_group.list as level_attempts %}
+                      {% with level_attempts|dictsortreversed:"score"|first as best_level_attempt %}
+
+                        <div class="recent-row">
+                          <div class="recent-left">
+                            Level {{ level_group.grouper }}
+                            — {{ level_attempts|length }} Attempts
+                            — Best: {{ best_level_attempt.score }}%
+
+                            —
+                            {% if best_level_attempt.passed %}
+                              <span style="color:#22C55E;">Passed</span>
+                            {% else %}
+                              <span style="color:#EF4444;">Not Cleared</span>
+                            {% endif %}
+                          </div>
+
+                          <div>
+                            <a class="view-link" href="{% url 'assessment_result' best_level_attempt.id %}">
+                              View Best →
+                            </a>
+                          </div>
+                        </div>
+
+                      {% endwith %}
+                    {% endwith %}
+                  {% endfor %}
+                </div>
+
+              {% endwith %}
+            </div>
+          {% endfor %}
+
+        {% else %}
+          <p style="color:rgba(245,230,211,0.72);">No attempts yet.</p>
+        {% endif %}
+      </div>
+
+    {% endif %}
+
+    <div class="footer-text">
+      Build your skills. Track your growth. Become job-ready.
+    </div>
+
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const circle = document.querySelector(".progress-ring__circle");
+      if (circle) {
+        const percentage = parseFloat(circle.dataset.percentage) || 0;
+        const radius = 75;
+        const circumference = 2 * Math.PI * radius;
+        circle.style.strokeDasharray = circumference;
+        const offset = circumference - (percentage / 100) * circumference;
+        circle.style.strokeDashoffset = offset;
+      }
+    });
+  </script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function(){
+      const dropdown = document.getElementById("roleDropdown");
+      if(!dropdown) return;
+
+      const trigger = dropdown.querySelector(".select-trigger");
+      const optionItems = dropdown.querySelectorAll(".option-item");
+      const selectedText = document.getElementById("selectedText");
+      const hiddenInput = document.getElementById("selectedValue");
+
+      trigger.addEventListener("click", function(){
+        dropdown.classList.toggle("open");
+      });
+
+      optionItems.forEach(item => {
+        item.addEventListener("click", function(){
+          const value = this.dataset.value;
+          const text = this.innerText;
+          selectedText.innerText = text;
+          hiddenInput.value = value;
+          dropdown.classList.remove("open");
+        });
+      });
+
+      document.addEventListener("click", function(e){
+        if(!dropdown.contains(e.target)){
+          dropdown.classList.remove("open");
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

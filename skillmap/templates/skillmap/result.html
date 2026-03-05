@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Assessment Result | SkillMap</title>
+
+<style>
+/* ===============================
+   RESULT PAGE — BROWN THEME (CLEAN)
+================================ */
+
+:root{
+  --bg:#302216;
+  --bg2:#23180f;
+
+  --text:#F5E6D3;
+  --muted: rgba(245,230,211,0.72);
+
+  --p1:#6B3E26;
+  --p2:#8B5A2B;
+  --p3:#C19A6B;
+
+  --border: rgba(193,154,107,0.18);
+  --border2: rgba(193,154,107,0.30);
+
+  --shadow: rgba(0,0,0,0.70);
+  --glow1: rgba(139,90,43,0.35);
+  --glow2: rgba(193,154,107,0.15);
+
+  --success:#22C55E;
+  --successSoft: rgba(34,197,94,0.12);
+
+  --danger:#EF4444;
+  --danger2:#DC2626;
+  --dangerSoft: rgba(239,68,68,0.12);
+}
+
+*{ margin:0; padding:0; box-sizing:border-box; }
+
+body{
+  font-family:'Inter', Arial, sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 20% 18%, rgba(139,90,43,0.25) 0%, transparent 45%),
+    radial-gradient(circle at 78% 22%, rgba(193,154,107,0.18) 0%, transparent 50%),
+    radial-gradient(circle at 50% 95%, rgba(107,62,38,0.15) 0%, transparent 55%),
+    linear-gradient(180deg, var(--bg2), var(--bg));
+  overflow-x:hidden;
+  position:relative;
+}
+
+/* subtle texture */
+body::after{
+  content:"";
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
+  opacity: .06;
+  mix-blend-mode: overlay;
+  pointer-events:none;
+  z-index:-1;
+}
+
+/* ===============================
+   NAVBAR
+================================ */
+.navbar{
+  height: 92px;
+  padding: 0 44px;
+  width:100%;
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  background:
+    radial-gradient(circle at 18% 30%, rgba(139,90,43,0.30) 0%, transparent 55%),
+    radial-gradient(circle at 80% 10%, rgba(193,154,107,0.18) 0%, transparent 55%),
+    linear-gradient(180deg, rgba(48,34,22,0.92), rgba(35,24,15,0.85));
+
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid rgba(193,154,107,0.22);
+
+  box-shadow:
+    0 18px 60px rgba(0,0,0,0.65),
+    0 0 40px rgba(139,90,43,0.18);
+
+  position: sticky;
+  top:0;
+  z-index:100;
+}
+
+.navbar::after{
+  content:"";
+  position:absolute;
+  left:0; right:0; bottom:-1px;
+  height:2px;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(193,154,107,0.45),
+    rgba(139,90,43,0.75),
+    rgba(193,154,107,0.45),
+    transparent
+  );
+  opacity:0.65;
+}
+
+.navbar::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background: linear-gradient(
+    110deg,
+    transparent 0%,
+    rgba(255,255,255,0.06) 32%,
+    rgba(255,255,255,0.02) 48%,
+    transparent 70%
+  );
+  opacity:0.55;
+  pointer-events:none;
+}
+
+.logo{
+  font-size:30px;
+  font-weight:900;
+  letter-spacing:0.6px;
+  background: linear-gradient(90deg, var(--text), var(--p3), var(--p2));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.nav-right{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.welcome-text{
+  font-size: 18px;
+  color: rgba(245,230,211,0.78);
+  letter-spacing: 0.2px;
+}
+
+.logout-btn{
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-weight: 900;
+  font-size: 14px;
+  cursor:pointer;
+  border: 1px solid rgba(193,154,107,0.28);
+
+  background: linear-gradient(90deg, var(--p1), var(--p2));
+  color: var(--text);
+
+  box-shadow:
+    0 10px 22px rgba(0,0,0,0.45),
+    0 0 18px rgba(139,90,43,0.25);
+
+  transition: 0.25s ease;
+}
+
+.logout-btn:hover{
+  transform: translateY(-2px);
+  box-shadow:
+    0 16px 34px rgba(0,0,0,0.55),
+    0 0 26px rgba(193,154,107,0.30);
+}
+
+/* ===============================
+   LAYOUT
+================================ */
+.container{
+  max-width: 900px;
+  margin: 70px auto;
+  padding: 0 20px;
+}
+
+/* ===============================
+   RESULT CARD
+================================ */
+.card{
+  background: rgba(139,90,43,0.08);
+  backdrop-filter: blur(14px);
+  padding: 44px;
+  border-radius: 18px;
+  border: 1px solid rgba(193,154,107,0.22);
+  box-shadow: 0 22px 80px rgba(0,0,0,0.70);
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+
+.card::before{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  background: linear-gradient(
+    110deg,
+    transparent 0%,
+    rgba(255,255,255,0.05) 32%,
+    rgba(255,255,255,0.015) 50%,
+    transparent 70%
+  );
+  opacity:0.40;
+  pointer-events:none;
+}
+
+.card h2{
+  margin-bottom: 10px;
+  font-size: 30px;
+  font-weight: 950;
+  background: linear-gradient(90deg, var(--text), var(--p3), var(--p2));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+/* details box */
+.result-details{
+  margin: 26px auto 18px;
+  max-width: 520px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: rgba(35,24,15,0.45);
+  border: 1px solid rgba(193,154,107,0.14);
+  color: rgba(245,230,211,0.78);
+  line-height: 1.75;
+  text-align:left;
+}
+
+.result-details strong{
+  color: var(--text);
+}
+
+/* status pills */
+.status-pass,
+.status-fail{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  margin: 12px 0 18px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 16px;
+  font-weight: 950;
+  letter-spacing: 0.2px;
+}
+
+.status-pass{
+  color: #D1FAE5;
+  background: var(--successSoft);
+  border: 1px solid rgba(34,197,94,0.22);
+  box-shadow: 0 0 22px rgba(34,197,94,0.10);
+}
+
+.status-fail{
+  color: #FEE2E2;
+  background: var(--dangerSoft);
+  border: 1px solid rgba(239,68,68,0.22);
+  box-shadow: 0 0 22px rgba(239,68,68,0.10);
+}
+
+/* button system */
+.actions{ margin-top: 10px; }
+
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  margin: 10px 8px 0;
+  padding: 12px 22px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 950;
+  text-decoration:none;
+  cursor:pointer;
+
+  color: var(--text);
+  background: linear-gradient(90deg, var(--p1), var(--p2));
+  border: 1px solid rgba(193,154,107,0.28);
+
+  box-shadow:
+    0 10px 22px rgba(0,0,0,0.45),
+    0 0 18px rgba(139,90,43,0.20);
+
+  transition: 0.25s ease;
+}
+
+.btn:hover{
+  transform: translateY(-2px);
+  box-shadow:
+    0 16px 34px rgba(0,0,0,0.55),
+    0 0 26px rgba(193,154,107,0.25);
+}
+
+.btn-danger{
+  background: linear-gradient(90deg, var(--danger), var(--danger2));
+  border: 1px solid rgba(239,68,68,0.28);
+  box-shadow:
+    0 10px 22px rgba(0,0,0,0.35),
+    0 0 18px rgba(239,68,68,0.22);
+}
+
+.btn-danger:hover{
+  box-shadow:
+    0 16px 34px rgba(0,0,0,0.45),
+    0 0 28px rgba(239,68,68,0.40);
+}
+
+/* responsive */
+@media (max-width: 720px){
+  .navbar{ padding: 0 18px; height: 84px; }
+  .welcome-text{ display:none; }
+  .logo{ font-size: 26px; }
+  .card{ padding: 30px; }
+  .result-details{ text-align:left; }
+}
+</style>
+</head>
+
+<body>
+
+<nav class="navbar">
+  <div class="logo">SkillMap</div>
+
+  <div class="nav-right">
+    <span class="welcome-text">Welcome, {{ request.user.username }}</span>
+
+    <form method="POST" action="{% url 'logout' %}">
+      {% csrf_token %}
+      <button type="submit" class="logout-btn">Logout</button>
+    </form>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="card">
+
+    <h2>Assessment Result</h2>
+
+    <div class="result-details">
+      <p><strong>Skill:</strong> {{ attempt.skill.name }}</p>
+      <p><strong>Level Attempted:</strong> {{ attempt.level_achieved }}</p>
+      <p><strong>Score:</strong> {{ attempt.score }}%</p>
+
+      {% if attempt.passed and attempt.time_taken and attempt.time_taken < 60 %}
+        <p style="margin-top:12px; color:#22C55E; font-weight:900;">
+          ⏱ Completed in {{ attempt.time_taken }} seconds
+        </p>
+      {% endif %}
+    </div>
+
+    {% if attempt.passed %}
+
+      <div class="status-pass">You Passed ✅</div>
+
+      <div class="actions">
+        {% if attempt.level_achieved < attempt.skill.total_levels %}
+          <a class="btn"
+             href="{% url 'take_assessment' attempt.skill.id attempt.level_achieved|add:1 %}">
+            Go To Level {{ attempt.level_achieved|add:1 }}
+          </a>
+        {% else %}
+          <p style="margin-bottom:10px; color: rgba(245,230,211,0.75); font-weight:800;">
+            You completed all levels 🎉
+          </p>
+          <a class="btn" href="{% url 'dashboard' %}">Go To Dashboard</a>
+        {% endif %}
+      </div>
+
+    {% else %}
+
+      <div class="status-fail">You Failed ❌</div>
+
+      <div class="actions">
+        <!-- stays as "restart from level 1" (your original logic) -->
+        <a class="btn btn-danger"
+           href="{% url 'take_assessment' attempt.skill.id 1 %}">
+          Retry From Level 1
+        </a>
+      </div>
+
+    {% endif %}
+
+  </div>
+</div>
+
+</body>
+</html>

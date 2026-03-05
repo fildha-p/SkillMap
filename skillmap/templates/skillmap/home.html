@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SkillMap | Visualize Your Growth</title>
+
+<style>
+/* ===============================
+   SKILLMAP HOME — BROWN THEME
+================================ */
+
+:root{
+  --bg: #302216;        /* deep dark brown */
+  --bg2:#23180f;        /* darker chocolate */
+
+  --text:#F5E6D3;       /* warm cream */
+  --muted:#D2B48C;      /* tan */
+
+  --p1:#6B3E26;         /* rich brown */
+  --p2:#8B5A2B;         /* saddle brown */
+  --p3:#C19A6B;         /* caramel */
+
+  --border: rgba(193,154,107,0.18);
+  --border2: rgba(193,154,107,0.30);
+
+  --shadow: rgba(0,0,0,0.7);
+  --glow1: rgba(139,90,43,0.35);
+  --glow2: rgba(193,154,107,0.15);
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:'Inter', sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 20% 15%, rgba(139,90,43,0.25) 0%, transparent 45%),
+    radial-gradient(circle at 80% 25%, rgba(193,154,107,0.18) 0%, transparent 50%),
+    radial-gradient(circle at 55% 95%, rgba(107,62,38,0.15) 0%, transparent 55%),
+    linear-gradient(180deg, var(--bg2), var(--bg));
+  overflow-x:hidden;
+  position:relative;
+}
+
+/* subtle texture */
+body::after{
+  content:"";
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
+  opacity: .06;
+  mix-blend-mode: overlay;
+  pointer-events:none;
+  z-index:-1;
+}
+
+.container{
+  width: 90%;
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* ===============================
+   NAVBAR
+================================ */
+.navbar{
+  height: 92px;
+  padding: 0 44px;
+  width: 100%;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  background:
+    radial-gradient(circle at 18% 30%, rgba(139,90,43,0.30) 0%, transparent 55%),
+    radial-gradient(circle at 80% 10%, rgba(193,154,107,0.18) 0%, transparent 55%),
+    linear-gradient(180deg, rgba(26,18,11,0.92), rgba(18,12,7,0.85));
+
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid rgba(193,154,107,0.22);
+
+  box-shadow:
+    0 18px 60px rgba(0,0,0,0.65),
+    0 0 40px rgba(139,90,43,0.18);
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+}
+
+/* glow line */
+.navbar::after{
+  content:"";
+  position:absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(193,154,107,0.45),
+    rgba(139,90,43,0.75),
+    rgba(193,154,107,0.45),
+    transparent
+  );
+  opacity: 0.85;
+}
+
+/* shine */
+.navbar::before{
+  content:"";
+  position:absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 0%,
+    rgba(255,255,255,0.06) 32%,
+    rgba(255,255,255,0.02) 48%,
+    transparent 70%
+  );
+  opacity: 0.55;
+  pointer-events:none;
+}
+
+.nav-left{
+  position: relative;
+}
+
+.logo{
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: 0.6px;
+  background: linear-gradient(90deg, var(--p3), var(--p1), var(--text));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  position: relative;
+}
+
+/* glow pill behind logo */
+.nav-left::after{
+  content:"";
+  position:absolute;
+  left: -18px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 170px;
+  height: 44px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 50%, rgba(139,90,43,0.22), transparent 70%);
+  filter: blur(10px);
+  pointer-events:none;
+}
+
+.nav-right{
+  display:flex;
+  align-items:center;
+  gap: 14px;
+}
+
+/* ===============================
+   BUTTONS
+================================ */
+.btn{
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 14px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.25s ease;
+  border: 1px solid rgba(193,154,107,0.28);
+}
+
+.btn-primary{
+  background: linear-gradient(90deg, var(--p1), var(--p2));
+  color: var(--text);
+  box-shadow:
+    0 10px 22px rgba(0,0,0,0.45),
+    0 0 18px rgba(139,90,43,0.30);
+}
+
+.btn-primary:hover{
+  transform: translateY(-2px);
+  box-shadow:
+    0 16px 34px rgba(0,0,0,0.55),
+    0 0 28px rgba(193,154,107,0.32);
+}
+
+.btn-secondary{
+  background: rgba(139,90,43,0.10);
+  color: rgba(245,230,211,0.95);
+  border: 1px solid rgba(193,154,107,0.35);
+  box-shadow: 0 10px 22px rgba(0,0,0,0.28);
+}
+
+.btn-secondary:hover{
+  transform: translateY(-2px);
+  background: rgba(193,154,107,0.12);
+  box-shadow:
+    0 16px 34px rgba(0,0,0,0.45),
+    0 0 26px rgba(193,154,107,0.18);
+}
+
+/* ===============================
+   HERO
+================================ */
+.hero{
+  min-height: 100vh;
+  display:flex;
+  align-items:center;
+  padding-top: 150px; /* clear fixed navbar */
+  text-align:center;
+}
+
+.hero .container{
+  position: relative;
+}
+
+.hero .container::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top: 35%;
+  transform: translate(-50%, -50%);
+  width: 680px;
+  height: 680px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(139,90,43,0.16) 0%, transparent 65%);
+  filter: blur(2px);
+  z-index:-1;
+  pointer-events:none;
+}
+
+.hero h1{
+  font-size: 56px;
+  line-height: 1.05;
+  margin-bottom: 22px;
+  background: linear-gradient(90deg, var(--text), var(--p3), var(--p2));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  text-shadow: 0 0 30px rgba(139,90,43,0.12);
+}
+
+.hero p{
+  font-size: 19px;
+  max-width: 720px;
+  margin: 0 auto 38px auto;
+  color: rgba(245,230,211,0.72);
+  line-height: 1.65;
+}
+
+.hero-buttons a{
+  margin: 10px;
+  padding: 14px 30px;
+  border-radius: 14px;
+  font-size: 15px;
+}
+
+/* ===============================
+   SECTIONS
+================================ */
+.stats{
+  padding: 70px 0 20px;
+  text-align:center;
+}
+
+.features{
+  padding: 90px 0 30px;
+  text-align:center;
+}
+
+.features h2{
+  margin-bottom: 56px;
+  font-size: 32px;
+  color: var(--text);
+  letter-spacing: 0.2px;
+}
+
+.cta{
+  padding: 90px 0;
+  text-align:center;
+}
+
+.cta h2{
+  font-size: 36px;
+  margin-bottom: 18px;
+}
+
+.cta p{
+  color: rgba(245,230,211,0.72);
+  margin-bottom: 30px;
+  font-size: 18px;
+}
+
+/* ===============================
+   CARDS / GRIDS
+================================ */
+.stats-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 26px;
+}
+
+.feature-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 28px;
+}
+
+.stat-box,
+.feature-card{
+  background: rgba(139,90,43,0.08);
+  border: 1px solid rgba(193,154,107,0.22);
+  border-radius: 18px;
+  padding: 36px;
+  transition: 0.28s ease;
+  box-shadow: 0 18px 60px rgba(0,0,0,0.65);
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-box::before,
+.feature-card::before{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  background: linear-gradient(
+    110deg,
+    transparent 0%,
+    rgba(255,255,255,0.05) 32%,
+    rgba(255,255,255,0.015) 50%,
+    transparent 70%
+  );
+  opacity: 0.35;
+  pointer-events:none;
+}
+
+.stat-box:hover,
+.feature-card:hover{
+  transform: translateY(-8px);
+  border-color: rgba(193,154,107,0.35);
+  box-shadow:
+    0 26px 90px rgba(0,0,0,0.75),
+    0 0 40px rgba(139,90,43,0.18);
+}
+
+.stat-box h3{
+  font-size: 38px;
+  margin-bottom: 10px;
+  background: linear-gradient(90deg, var(--text), var(--p3), var(--p2));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.stat-box p{
+  color: rgba(245,230,211,0.68);
+  font-size: 14px;
+}
+
+.feature-card h3{
+  margin-bottom: 16px;
+  font-size: 20px;
+  color: var(--text);
+}
+
+.feature-card p{
+  color: rgba(245,230,211,0.70);
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+/* ===============================
+   FOOTER
+================================ */
+.footer{
+  text-align:center;
+  padding: 40px 0;
+  border-top: 1px solid rgba(193,154,107,0.14);
+  color: rgba(245,230,211,0.70);
+  font-size: 14px;
+}
+
+/* optional: remove if you hate animation */
+.btn-primary{
+  animation: float 3s ease-in-out infinite alternate;
+}
+@keyframes float{
+  from{ transform: translateY(0px); }
+  to{ transform: translateY(-6px); }
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+@media (max-width: 780px){
+  .navbar{ padding: 0 18px; height: 84px; }
+  .logo{ font-size: 26px; }
+  .hero{ padding-top: 130px; }
+  .hero h1{ font-size: 40px; }
+  .hero p{ font-size: 16px; }
+  .hero .container::before{ width: 420px; height: 420px; top: 30%; }
+  .hero-buttons a{ padding: 12px 22px; }
+}
+</style>
+</head>
+
+<body>
+
+<nav class="navbar">
+  <div class="nav-left">
+    <span class="logo">SkillMap</span>
+  </div>
+
+  <div class="nav-right">
+    {% if user.is_authenticated %}
+      <a href="{% url 'dashboard' %}" class="btn btn-primary">Dashboard</a>
+    {% else %}
+      <a href="{% url 'login' %}" class="btn btn-secondary">Login</a>
+      <a href="{% url 'register' %}" class="btn btn-primary">Get Started</a>
+    {% endif %}
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="container">
+    <h1>Transform Your Skills Into Career Confidence</h1>
+    <p>
+      Track your readiness, analyze performance, and prepare smarter for interviews
+      using structured visual skill analytics.
+    </p>
+
+    <div class="hero-buttons">
+      {% if user.is_authenticated %}
+        <a href="{% url 'dashboard' %}" class="btn btn-primary">Go to Dashboard</a>
+      {% else %}
+        <a href="{% url 'register' %}" class="btn btn-primary">Start Free</a>
+        <a href="{% url 'login' %}" class="btn btn-secondary">Login</a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<section class="stats">
+  <div class="container stats-grid">
+    <div class="stat-box">
+      <h3>100+</h3>
+      <p>Skill Evaluations</p>
+    </div>
+    <div class="stat-box">
+      <h3>95%</h3>
+      <p>User Satisfaction</p>
+    </div>
+    <div class="stat-box">
+      <h3>30+</h3>
+      <p>Career Role Mappings</p>
+    </div>
+  </div>
+</section>
+
+<section class="features">
+  <div class="container">
+    <h2>Powerful Features</h2>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <h3>Role Readiness Tracking</h3>
+        <p>Understand how prepared you are for industry job roles.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Visual Skill Dashboard</h3>
+        <p>Modern progress tracking with structured evaluation reports.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Interview Preparation</h3>
+        <p>Identify strengths and improvement areas before facing recruiters.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="container">
+    <h2>Ready to Level Up Your Career?</h2>
+    <p>Start tracking your skills today and prepare with confidence.</p>
+
+    {% if not user.is_authenticated %}
+      <a href="{% url 'register' %}" class="btn btn-primary">Create Free Account</a>
+    {% endif %}
+  </div>
+</section>
+
+<div class="footer">
+  © 2026 SkillMap. Designed for Growth.
+</div>
+
+</body>
+</html>

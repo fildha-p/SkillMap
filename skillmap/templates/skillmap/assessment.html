@@ -621,18 +621,38 @@ hr{
 
         <div class="button-row">
           {% if result.passed %}
-            {% if level < skill.total_levels %}
-              <a href="{% url 'take_assessment' skill.id level|add:1 %}" class="btn btn-primary">
-                Proceed to Level {{ level|add:1 }}
-              </a>
-            {% endif %}
-          {% else %}
-            <a href="{% url 'take_assessment' skill.id level %}" class="btn btn-danger">
-              Retry Level {{ level }}
-            </a>
-          {% endif %}
+  {% if level < skill.total_levels %}
+    {% if current_role_id %}
+      <a href="{% url 'take_assessment' skill.id level|add:1 %}?role={{ current_role_id }}" class="btn btn-primary">
+        Proceed to Level {{ level|add:1 }}
+      </a>
+    {% else %}
+      <a href="{% url 'take_assessment' skill.id level|add:1 %}" class="btn btn-primary">
+        Proceed to Level {{ level|add:1 }}
+      </a>
+    {% endif %}
+  {% endif %}
+{% else %}
+  {% if current_role_id %}
+    <a href="{% url 'take_assessment' skill.id level %}?role={{ current_role_id }}" class="btn btn-danger">
+      Retry Level {{ level }}
+    </a>
+  {% else %}
+    <a href="{% url 'take_assessment' skill.id level %}" class="btn btn-danger">
+      Retry Level {{ level }}
+    </a>
+  {% endif %}
+{% endif %}
 
-          <a href="{% url 'dashboard' %}" class="btn btn-secondary">Go to Dashboard</a>
+{% if current_role_id %}
+  <a href="{% url 'dashboard' %}?role={{ current_role_id }}" class="btn btn-secondary">
+    Go to Dashboard
+  </a>
+{% else %}
+  <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+    Go to Dashboard
+  </a>
+{% endif %}
         </div>
 
       </div>

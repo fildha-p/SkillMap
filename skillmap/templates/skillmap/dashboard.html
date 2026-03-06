@@ -831,7 +831,7 @@
 
                   <td>
                     {% if item.next_level %}
-                      <a class="btn" href="{% url 'take_assessment' item.skill.id item.next_level %}">
+                      <a class="btn" href="{% url 'take_assessment' item.skill.id item.next_level %}?role={{ active_role.id }}">
                         Level {{ item.next_level }}
                       </a>
                     {% else %}
@@ -842,8 +842,8 @@
                   <td>
                     {% if item.current_level > 0 %}
                       <form method="POST"
-                            action="{% url 'reset_skill' item.skill.id %}"
-                            onsubmit="return confirm('Are you sure you want to reset this skill?');">
+      action="{% url 'reset_skill' item.skill.id %}?role={{ active_role.id }}"
+      onsubmit="return confirm('Are you sure you want to reset this skill?');">
                         {% csrf_token %}
                         <button class="reset-btn" type="submit">Reset</button>
                       </form>
@@ -915,9 +915,9 @@
                           </div>
 
                           <div>
-                            <a class="view-link" href="{% url 'assessment_result' best_level_attempt.id %}">
-                              View Best →
-                            </a>
+                            <a class="view-link" href="{% url 'assessment_result' best_level_attempt.id %}?role={{ active_role.id }}">
+  View Best →
+</a>
                           </div>
                         </div>
 

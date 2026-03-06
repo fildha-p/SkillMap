@@ -36,36 +36,48 @@ def take_assessment(request, skill_id, level):
     )
 
     if level > user_skill.level + 1:
+        current_role_id = request.GET.get("role")
+        if current_role_id:
+            return redirect(f'/skillmap/dashboard/?role={current_role_id}')
         return redirect('dashboard')
+        # return redirect('dashboard')
 
     if level > skill.total_levels:
+        current_role_id = request.GET.get("role")
+        if current_role_id:
+            return redirect(f'/skillmap/dashboard/?role={current_role_id}')
         return redirect('dashboard')
+        # return redirect('dashboard')
 
     questions = skill.questions.filter(difficulty_level=level)
 
     if request.method == 'POST':
+        
+        current_role_id = request.GET.get("role")
+
         attempt = evaluate_assessment(
-            user=request.user,
-            skill=skill,
-            level=level,
-            submitted_answers=request.POST
-        )
+        user=request.user,
+        skill=skill,
+        level=level,
+        submitted_answers=request.POST
+    )
 
         wrong_count = attempt.total_questions - attempt.correct_count
 
         return render(request, 'skillmap/assessment.html', {
-            'skill': skill,
-            'level': level,
-            'questions': questions,
-            'result': attempt,
-            'wrong_count': wrong_count
-        })
-
-    return render(request, 'skillmap/assessment.html', {
         'skill': skill,
         'level': level,
-        'questions': questions
+        'questions': questions,
+        'result': attempt,
+        'wrong_count': wrong_count,
+        'current_role_id': current_role_id,
     })
+    return render(request, 'skillmap/assessment.html', {
+    'skill': skill,
+    'level': level,
+    'questions': questions,
+    'current_role_id': request.GET.get("role"),
+})
 
 
 # ===============================
@@ -78,17 +90,19 @@ def dashboard(request):
 
     # Add Role
     if request.method == "POST":
+        
         role_id = request.POST.get("role_id")
         if role_id:
+            
             role = get_object_or_404(Role, id=role_id)
             UserRole.objects.get_or_create(user=user, role=role)
-            return redirect("dashboard")
+            return redirect(f"{request.path}?role={role.id}")
 
     role_id = request.GET.get("role")
 
     # Auto-select first role if none selected
     if not role_id and selected_roles.exists():
-        role_id = selected_roles.first().role.id
+        role_id = selected_roles.order_by('selected_at').first().role.id
 
     active_role = None
     role_readiness = None
@@ -199,6 +213,9 @@ def reset_skill(request, skill_id):
         skill=skill
     ).delete()
 
+    current_role_id = request.GET.get("role")
+    if current_role_id:
+        return redirect(f'/skillmap/dashboard/?role={current_role_id}')
     return redirect('dashboard')
 
 
@@ -231,10 +248,13 @@ def assessment_result(request, attempt_id):
         id=attempt_id,
         user=request.user
     )
-    return render(request, "skillmap/result.html", {
-        'attempt': attempt
-    })
 
+    current_role_id = request.GET.get("role")
+
+    return render(request, "skillmap/result.html", {
+        'attempt': attempt,
+        'current_role_id': current_role_id,
+    })
 
 @login_required
 def assessment_history(request):

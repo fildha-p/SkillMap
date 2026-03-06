@@ -357,15 +357,26 @@ body::after{
 
       <div class="actions">
         {% if attempt.level_achieved < attempt.skill.total_levels %}
-          <a class="btn"
-             href="{% url 'take_assessment' attempt.skill.id attempt.level_achieved|add:1 %}">
-            Go To Level {{ attempt.level_achieved|add:1 }}
-          </a>
+          {% if current_role_id %}
+  <a class="btn"
+     href="{% url 'take_assessment' attempt.skill.id attempt.level_achieved|add:1 %}?role={{ current_role_id }}">
+    Go To Level {{ attempt.level_achieved|add:1 }}
+  </a>
+{% else %}
+  <a class="btn"
+     href="{% url 'take_assessment' attempt.skill.id attempt.level_achieved|add:1 %}">
+    Go To Level {{ attempt.level_achieved|add:1 }}
+  </a>
+{% endif %}
         {% else %}
           <p style="margin-bottom:10px; color: rgba(245,230,211,0.75); font-weight:800;">
             You completed all levels 🎉
           </p>
-          <a class="btn" href="{% url 'dashboard' %}">Go To Dashboard</a>
+          {% if current_role_id %}
+  <a class="btn" href="{% url 'dashboard' %}?role={{ current_role_id }}">Go To Dashboard</a>
+{% else %}
+  <a class="btn" href="{% url 'dashboard' %}">Go To Dashboard</a>
+{% endif %}
         {% endif %}
       </div>
 
@@ -375,10 +386,17 @@ body::after{
 
       <div class="actions">
         <!-- stays as "restart from level 1" (your original logic) -->
-        <a class="btn btn-danger"
-           href="{% url 'take_assessment' attempt.skill.id 1 %}">
-          Retry From Level 1
-        </a>
+       {% if current_role_id %}
+  <a class="btn btn-danger"
+     href="{% url 'take_assessment' attempt.skill.id 1 %}?role={{ current_role_id }}">
+    Retry From Level 1
+  </a>
+{% else %}
+  <a class="btn btn-danger"
+     href="{% url 'take_assessment' attempt.skill.id 1 %}">
+    Retry From Level 1
+  </a>
+{% endif %}
       </div>
 
     {% endif %}

@@ -4,6 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    path('', include('skillmap.urls')),   # 👈 add this line
     # Admin
     path('admin/', admin.site.urls),
 
